@@ -39,9 +39,13 @@
 (defn footer []
   [:footer.page-footer
    [:p
-    [:a {:href "https://github.com/roman01la" :target "_blank"} "GitHub"]
-    " . "
-    [:a {:href "https://mobile.twitter.com/roman01la" :target "_blank"} "Twitter"]]
+    (let [items (interpose " . " {"GitHub"  "https://github.com/roman01la"
+                                  "Twitter" "https://mobile.twitter.com/roman01la"
+                                  "RSS"     "/rss.xml"})]
+      (for [item items]
+        (if (string? item)
+          item
+          [:a {:href (second item) :target "_blank"} (first item)])))]
    [:p (str "&copy; " year " ")]])
 
 (defn post [{:keys [link title date author html duration comments]}]
@@ -125,7 +129,7 @@
      [:title (cdata (first title))]
      [:link link]
      [:guid {:isPermaLink "false"} link]
-     [:pubDate]
+     [:pubDate (first date)]
      ["content:encoded"
       (-> html
           (cstr/replace #"<" "&lt;")
