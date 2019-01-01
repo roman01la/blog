@@ -1,0 +1,119 @@
+body {
+    font-family: 'Merriweather', serif;
+    letter-spacing: 0;
+    font-weight: 400;
+    font-style: normal;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -moz-font-feature-settings: "liga" on;
+    color: rgba(0, 0, 0, .84);
+    font-size: 17px;
+    line-height: 1.7em;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+h1, h2, h3 {
+    font-family: 'Lora', serif;
+}
+
+h1 {
+    margin: 0.6em 0;
+}
+
+h2 {
+    margin: 0.4em 0;
+}
+
+h3 {
+    margin: 0.2em 0;
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+.index article h1 {
+    margin: 0.3em 0;
+}
+
+.post-page .page-header {
+    margin: 0 0 2em;
+}
+
+.post-page .page-header h1 {
+    font-size: 1.3em;
+}
+
+.page-header {
+    margin: 0 0 4em;
+    display: flex;
+    align-items: center;
+}
+
+.page-header h1 a {
+    color: rgba(0, 0, 0, .84);
+    text-decoration: none;
+}
+
+.page-footer {
+    margin: 4em 0 0;
+}
+
+article time, article footer, .page-footer, .duration {
+    font-size: 0.8em;
+    color: #525252;
+}
+
+.duration {
+    margin: 0 0 0 24px;
+}
+
+form {
+    margin: 32px 0 0;
+}
+
+form input {
+    padding: 0 8px;
+    border: none;
+    border-bottom: 1px solid #666;
+    font-size: 0.9em;
+    outline: none;
+    color: #666;
+    margin: 0 16px 0 0;
+    height: 28px;
+}
+
+form input:focus {
+    border-bottom: 1px solid blue;
+}
+
+form button {
+    border-radius: 3px;
+    padding: 4px 16px;
+    border: 1px solid blue;
+    background: transparent;
+    color: blue;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    outline: none;
+    height: 30px;
+    margin: 0;
+    vertical-align: top;
+    font-weight: 500;
+}
+
+form button:focus {
+    box-shadow: 0 0 8px rgba(0, 0, 255, 0.2);
+}
+
+.profile {
+    display: block;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 24px 0 0;
+}
