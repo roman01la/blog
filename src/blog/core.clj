@@ -18,6 +18,7 @@
    [:meta {:name "viewport" :content "width=device-width"}]
    [:meta {:name "theme-color" :content "#0000ff"}]
    [:meta {:name "description" :content "This blog is mostly brain dump by Roman Liutikov"}]
+   [:link {:rel "shortcut icon" :href "/icon.png"}]
    [:title title]
    (p/include-css "https://fonts.googleapis.com/css?family=Lora%7CMerriweather")
    (p/include-css "main.css")])
