@@ -1,5 +1,6 @@
 (ns blog.core
   (:require [hiccup.page :as p]
+            [hiccup.core :as h]
             [markdown.core :as md]
             [clojure.string :as cstr])
   (:import (java.io File)
@@ -18,6 +19,7 @@
    [:meta {:name "viewport" :content "width=device-width"}]
    [:meta {:name "theme-color" :content "#0000ff"}]
    [:meta {:name "description" :content "This blog is mostly brain dump by Roman Liutikov"}]
+   [:link {:rel "alternate" :type "application/rss+xml" :href "/rss.xml"}]
    [:link {:rel "shortcut icon" :href "/icon.png"}]
    [:title title]
    (p/include-css "https://fonts.googleapis.com/css?family=Lora%7CMerriweather")
@@ -114,6 +116,38 @@
        (render-page)
        (spit "static/index.html")))
 
+(defn cdata [s]
+  (str "<![CDATA[" s "]]>"))
+
+(defn -render-rss-item [[file {{:keys [title date]} :metadata html :html}]]
+  (let [link (str "https://romanliutikov.com/" file ".html")]
+    [:item
+     [:title (cdata (first title))]
+     [:link link]
+     [:guid {:isPermaLink "false"} link]
+     [:pubDate]
+     ["content:encoded"
+      (-> html
+          (cstr/replace #"<" "&lt;")
+          (cstr/replace #">" "&gt;"))]]))
+
+(defn -render-rss [file-names posts]
+  (h/html
+    [:rss {"xmlns:dc"      "http://purl.org/dc/elements/1.1/"
+           "xmlns:content" "http://purl.org/rss/1.0/modules/content/"
+           "xmlns:atom"    "http://www.w3.org/2005/Atom"
+           :version        "2.0"}
+     `[:channel
+       [:title ~(cdata "Roman’s Blog")]
+       [:description ~(cdata "This blog is mostly brain dump by Roman Liutikov")]
+       [:link "https://romanliutikov.com/"]
+       [:lastBuildDate ~(.toString (Date.))]
+       ~@(->> (zipmap file-names posts) (map -render-rss-item))]]))
+
+(defn render-rss [file-names posts]
+  (->> (-render-rss file-names posts)
+       (spit "static/rss.xml")))
+
 (defn render-blog []
   (let [files (->> (file-seq (File. "posts"))
                    (filter #(.isFile ^File %)))
@@ -126,6 +160,7 @@
                    (map #(clojure.string/replace % "'" "’"))
                    (map #(md/md-to-html-string-with-meta %)))]
     (render-posts file-names posts)
-    (render-main file-names posts)))
+    (render-main file-names posts)
+    (render-rss file-names posts)))
 
 (render-blog)
