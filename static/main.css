@@ -1,3 +1,31 @@
+@font-face {
+    font-family: 'Fira Code';
+    src: url('fonts/FiraCode-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fira Code';
+    src: url('fonts/FiraCode-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fira Code';
+    src: url('fonts/FiraCode-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fira Code';
+    src: url('fonts/FiraCode-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
 body {
     font-family: 'Merriweather', serif;
     letter-spacing: 0;
@@ -29,6 +57,19 @@ h2 {
 
 h3 {
     margin: 0.2em 0;
+}
+
+pre {
+    font-size: 0.8em;
+    line-height: 1.6em;
+    background: rgba(0, 0, 255, 0.06);
+    padding: 8px 12px;
+    color: blue;
+    border-radius: 9px;
+}
+
+code {
+    font-family: 'Fira Code', monospace;
 }
 
 a {
