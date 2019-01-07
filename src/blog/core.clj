@@ -10,23 +10,25 @@
 
 (def wpm 200)
 
+(def host "https://romanliutikov.com/")
+
 (def year
   (let [cal (Calendar/getInstance)]
     (.setTime cal (Date.))
     (.get cal Calendar/YEAR)))
 
-(defn head [{:keys [title]}]
+(defn head [{:keys [title link]}]
   [:head
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport" :content "width=device-width"}]
    [:meta {:name "theme-color" :content "#0000ff"}]
    [:meta {:name "description" :content "This blog is mostly brain dump by Roman Liutikov"}]
-   [:meta {:property "og:url" :content "https://romanliutikov.com/"}]
-   [:meta {:property "og:title" :content "Roman’s Blog"}]
+   [:meta {:property "og:url" :content link}]
+   [:meta {:property "og:title" :content title}]
    [:meta {:property "og:description" :content "This blog is mostly brain dump by Roman Liutikov"}]
    [:meta {:name "twitter:card" :content "summary"}]
    [:meta {:name "twitter:creator" :content "@roman01la"}]
-   [:meta {:name "twitter:title" :content "Roman’s Blog"}]
+   [:meta {:name "twitter:title" :content title}]
    [:meta {:name "twitter:description" :content "This blog is mostly brain dump by Roman Liutikov"}]
    [:link {:rel "alternate" :type "application/rss+xml" :href "/rss.xml"}]
    [:link {:rel "shortcut icon" :href "/icon.png"}]
@@ -103,9 +105,9 @@
    [:button "Subscribe"]])
 
 (defn render-post
-  [{{:keys [title author date comments]} :metadata html :html}]
+  [file-name {{:keys [title author date comments]} :metadata html :html}]
   (p/html5
-    (head {:title (str (first title) " | Roman’s Blog")})
+    (head {:title (first title) :link (str host file-name ".html")})
     [:body.post-page
      (header {:description? false})
      (content
@@ -120,7 +122,7 @@
 
 (defn render-posts [file-names posts]
   (->> posts
-       (map render-post)
+       (map render-post file-names)
        (zipmap file-names)
        (run! #(spit (str "static/" (first %) ".html") (second %)))))
 
@@ -133,7 +135,7 @@
   (str "<![CDATA[" s "]]>"))
 
 (defn -render-rss-item [[file {{:keys [title date]} :metadata html :html}]]
-  (let [link (str "https://romanliutikov.com/" file ".html")]
+  (let [link (str host file ".html")]
     [:item
      [:title (cdata (first title))]
      [:link link]
@@ -150,12 +152,12 @@
            "xmlns:content" "http://purl.org/rss/1.0/modules/content/"
            "xmlns:atom"    "http://www.w3.org/2005/Atom"
            :version        "2.0"}
-     `[:channel
-       [:title ~(cdata "Roman’s Blog")]
-       [:description ~(cdata "This blog is mostly brain dump by Roman Liutikov")]
-       [:link "https://romanliutikov.com/"]
-       [:lastBuildDate ~(.toString (Date.))]
-       ~@(->> (zipmap file-names posts) (map -render-rss-item))]]))
+     [:channel
+      [:title (cdata "Roman’s Blog")]
+      [:description (cdata "This blog is mostly brain dump by Roman Liutikov")]
+      [:link host]
+      [:lastBuildDate (.toString (Date.))]
+      (->> (zipmap file-names posts) (map -render-rss-item))]]))
 
 (defn render-rss [file-names posts]
   (->> (-render-rss file-names posts)
