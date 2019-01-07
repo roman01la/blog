@@ -1,3 +1,6 @@
 .idea
+.cpcache
 static/*.html
 static/rss.xml
+static/main.*.css
+build/closure-stylesheets.jar

@@ -6,6 +6,8 @@
   (:import (java.io File)
            (java.util Date Calendar)))
 
+(declare ^:dynamic *args*)
+
 (def wpm 200)
 
 (def year
@@ -30,7 +32,7 @@
    [:link {:rel "shortcut icon" :href "/icon.png"}]
    [:title title]
    (p/include-css "https://fonts.googleapis.com/css?family=Lora%7CMerriweather")
-   (p/include-css "main.css")])
+   (p/include-css (get *args* "--css"))])
 
 (defn header [{:keys [description?] :or {description? true}}]
   [:header.page-header
@@ -174,4 +176,11 @@
     (render-main file-names posts)
     (render-rss file-names posts)))
 
-(render-blog)
+(defn parse-args [args]
+  (->> (partition 2 args)
+       (map vec)
+       (into {})))
+
+(defn -main [& args]
+  (binding [*args* (parse-args args)]
+    (render-blog)))
