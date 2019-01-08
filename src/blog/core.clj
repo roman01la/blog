@@ -52,6 +52,7 @@
    [:p
     (let [items (interpose " . " {"GitHub"  "https://github.com/roman01la"
                                   "Twitter" "https://mobile.twitter.com/roman01la"
+                                  "Telegram" "https://t.me/frontender_clj"
                                   "RSS"     "/rss.xml"})]
       (for [item items]
         (if (string? item)
