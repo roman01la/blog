@@ -164,9 +164,12 @@
   (->> (-render-rss file-names posts)
        (spit "static/rss.xml")))
 
+(defn ignore-post? [^File f]
+  (.startsWith (.getName f) "__"))
+
 (defn render-blog []
   (let [files (->> (file-seq (File. "posts"))
-                   (filter #(.isFile ^File %)))
+                   (filter #(and (.isFile ^File %) (not (ignore-post? %)))))
         file-names (->> files
                         (map #(.getPath ^File %))
                         (map #(re-find #"\/(.*)\.md$" %))
