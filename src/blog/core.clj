@@ -31,14 +31,14 @@
    [:meta {:name "twitter:title" :content title}]
    [:meta {:name "twitter:description" :content "This blog is mostly brain dump by Roman Liutikov"}]
    [:link {:rel "alternate" :type "application/rss+xml" :href "/rss.xml"}]
-   [:link {:rel "shortcut icon" :href "/icon.png"}]
+   [:link {:rel "shortcut icon" :href "/assets/icon.png"}]
    [:title title]
    (p/include-css "https://fonts.googleapis.com/css?family=Lora%7CMerriweather")
    (p/include-css (get *args* "--css"))])
 
 (defn header [{:keys [description?] :or {description? true}}]
   [:header.page-header
-   [:img.profile {:src "/profile.jpg"}]
+   [:img.profile {:src "/assets/profile.jpg"}]
    [:div
     [:h1 [:a {:href "/"} "Roman’s Blog"]]
     (when description?

@@ -59,6 +59,11 @@ h3 {
     margin: 0.2em 0;
 }
 
+img.center {
+    display: block;
+    margin: 32px auto;
+}
+
 pre {
     font-size: 0.8em;
     line-height: 1.6em;
@@ -75,6 +80,10 @@ code {
 a {
     color: blue;
     text-decoration: none;
+}
+
+p a {
+    text-decoration: underline;
 }
 
 .index article h1 {
