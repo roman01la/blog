@@ -1,16 +1,16 @@
 (ns blog.core
   (:require [hiccup.page :as p]
-            [hiccup.core :as h]
+            [blog.rss :as rss]
             [markdown.core :as md]
             [clojure.string :as cstr])
   (:import (java.io File)
            (java.util Date Calendar)))
 
+(def config (read-string (slurp "blog.edn")))
+
 (declare ^:dynamic *args*)
 
 (def wpm 200)
-
-(def host "https://romanliutikov.com/")
 
 (def year
   (let [cal (Calendar/getInstance)]
@@ -21,15 +21,15 @@
   [:head
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport" :content "width=device-width"}]
-   [:meta {:name "theme-color" :content "#0000ff"}]
-   [:meta {:name "description" :content "This blog is mostly brain dump by Roman Liutikov"}]
+   [:meta {:name "theme-color" :content (:theme-color config)}]
+   [:meta {:name "description" :content (:description config)}]
    [:meta {:property "og:url" :content link}]
    [:meta {:property "og:title" :content title}]
-   [:meta {:property "og:description" :content "This blog is mostly brain dump by Roman Liutikov"}]
+   [:meta {:property "og:description" :content (:description config)}]
    [:meta {:name "twitter:card" :content "summary"}]
-   [:meta {:name "twitter:creator" :content "@roman01la"}]
+   [:meta {:name "twitter:creator" :content (str "@" (:twitter config))}]
    [:meta {:name "twitter:title" :content title}]
-   [:meta {:name "twitter:description" :content "This blog is mostly brain dump by Roman Liutikov"}]
+   [:meta {:name "twitter:description" :content (:description config)}]
    [:link {:rel "alternate" :type "application/rss+xml" :href "/rss.xml"}]
    [:link {:rel "shortcut icon" :href "/assets/icon.png"}]
    [:title title]
@@ -40,9 +40,12 @@
   [:header.page-header
    [:img.profile {:src "/assets/profile.jpg"}]
    [:div
-    [:h1 [:a {:href "/"} "Roman’s Blog"]]
+    [:h1 [:a {:href "/"} (:title config)]]
     (when description?
-      [:p "This blog is mostly brain dump by " [:a {:href "https://mobile.twitter.com/roman01la" :target "_blank"} "@roman01la"]])]])
+      (let [link (str "https://mobile.twitter.com/" (:twitter config))]
+        [:p "This blog is mostly brain dump by "
+         [:a {:href link :target "_blank"}
+          (str "@" (:twitter config))]]))]])
 
 (defn content [& children]
   `[:main ~@children])
@@ -50,10 +53,7 @@
 (defn footer []
   [:footer.page-footer
    [:p
-    (let [items (interpose " . " {"GitHub"  "https://github.com/roman01la"
-                                  "Twitter" "https://mobile.twitter.com/roman01la"
-                                  "Telegram" "https://t.me/frontender_clj"
-                                  "RSS"     "/rss.xml"})]
+    (let [items (interpose " . " (:footer config))]
       (for [item items]
         (if (string? item)
           item
@@ -85,7 +85,7 @@
 
 (defn render-page [posts]
   (p/html5
-    (head {:title "Roman’s Blog"})
+    (head {:title (:title config)})
     [:body.index
      (header {})
      (content
@@ -108,7 +108,7 @@
 (defn render-post
   [file-name {{:keys [title author date comments]} :metadata html :html}]
   (p/html5
-    (head {:title (first title) :link (str host file-name ".html")})
+    (head {:title (first title) :link (str (:host config) file-name ".html")})
     [:body.post-page
      (header {:description? false})
      (content
@@ -132,36 +132,8 @@
        (render-page)
        (spit "static/index.html")))
 
-(defn cdata [s]
-  (str "<![CDATA[" s "]]>"))
-
-(defn -render-rss-item [[file {{:keys [title date]} :metadata html :html}]]
-  (let [link (str host file ".html")]
-    [:item
-     [:title (cdata (first title))]
-     [:link link]
-     [:guid {:isPermaLink "false"} link]
-     [:pubDate (first date)]
-     ["content:encoded"
-      (-> html
-          (cstr/replace #"<" "&lt;")
-          (cstr/replace #">" "&gt;"))]]))
-
-(defn -render-rss [file-names posts]
-  (h/html
-    [:rss {"xmlns:dc"      "http://purl.org/dc/elements/1.1/"
-           "xmlns:content" "http://purl.org/rss/1.0/modules/content/"
-           "xmlns:atom"    "http://www.w3.org/2005/Atom"
-           :version        "2.0"}
-     [:channel
-      [:title (cdata "Roman’s Blog")]
-      [:description (cdata "This blog is mostly brain dump by Roman Liutikov")]
-      [:link host]
-      [:lastBuildDate (.toString (Date.))]
-      (->> (zipmap file-names posts) (map -render-rss-item))]]))
-
 (defn render-rss [file-names posts]
-  (->> (-render-rss file-names posts)
+  (->> (rss/render config file-names posts)
        (spit "static/rss.xml")))
 
 (defn ignore-post? [^File f]

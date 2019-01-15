@@ -1,0 +1,9 @@
+{:theme-color "#0000ff"
+ :host        "https://romanliutikov.com/"
+ :description "This blog is mostly brain dump by Roman Liutikov"
+ :twitter     "roman01la"
+ :title       "Roman’s Blog"
+ :footer      {"GitHub"   "https://github.com/roman01la"
+               "Twitter"  "https://mobile.twitter.com/roman01la"
+               "Telegram" "https://t.me/frontender_clj"
+               "RSS"      "/rss.xml"}}
