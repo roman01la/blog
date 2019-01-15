@@ -1,7 +1,6 @@
 .idea
 .cpcache
-static/*.html
-static/rss.xml
-static/main.*.css
+static/**/*
+!static/now.json
 build/closure-stylesheets.jar
 posts/__*.md
