@@ -4,3 +4,4 @@ static/*.html
 static/rss.xml
 static/main.*.css
 build/closure-stylesheets.jar
+posts/__*.md
