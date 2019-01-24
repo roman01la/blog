@@ -86,6 +86,10 @@ p a {
     text-decoration: underline;
 }
 
+.index article {
+    margin: 24px 0;
+}
+
 .index article h1 {
     margin: 0.3em 0;
 }

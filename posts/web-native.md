@@ -1,7 +1,6 @@
 Title: Web developer makes native app
 Author: Roman Liutikov
-Date: January 1, 2019
-Comments: https://www.reddit.com/r/programming/comments/abiu4z/web_developer_makes_native_app/
+Date: 01-01-2019
 
 The last couple of weeks I’ve been [trying myself](https://github.com/replete-repl/replete-android) at native mobile apps development for Android. Being mainly front-end developer while working with Clojure I’ve chosen to go with Kotlin since it proposes more functional alternative to Java and takes advantage of its ecosystem.
 

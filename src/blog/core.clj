@@ -2,7 +2,8 @@
   (:require [hiccup.page :as p]
             [blog.rss :as rss]
             [markdown.core :as md]
-            [clojure.string :as cstr])
+            [clojure.string :as cstr]
+            [blog.utils :as utils])
   (:import (java.io File)
            (java.util Date Calendar)))
 
@@ -68,18 +69,21 @@
         [:a {:href link} title]
         title))
     [:div
-     [:time {:datetime date} date]
+     [:time (utils/format-date date)]
      (when duration
        [:span.duration (str duration " min read")])]]
    (when html
      [:div html])
    [:footer
-    (when author
-      [:p author " - " (when comments [:a {:href comments} "Discuss on Reddit"])])]])
+    #_(when author
+        [:p author " - " (when comments [:a {:href comments} "Discuss on Reddit"])])]])
 
-(defn render-excerpt [[file {{:keys [title date]} :metadata html :html}]]
+(defn render-excerpt
+  [{{:keys [title date]} :metadata
+    html                 :html
+    file                 :file}]
   (post {:title    (first title)
-         :date     (first date)
+         :date     date
          :link     (str file ".html")
          :duration (-> (cstr/split html #" +") count (/ wpm) double Math/round)}))
 
@@ -106,38 +110,53 @@
    [:button "Subscribe"]])
 
 (defn render-post
-  [file-name {{:keys [title author date comments]} :metadata html :html}]
-  (p/html5
-    (head {:title (first title) :link (str (:host config) file-name ".html")})
-    [:body.post-page
-     (header {:description? false})
-     (content
-       (post {:title    (first title)
-              :date     (first date)
-              :author   (first author)
-              :comments (first comments)
-              :html     html})
-       (newsletter-block))
-     (footer)]))
+  [{{:keys [title author date comments]} :metadata
+    html                                 :html
+    file-name                            :file}]
+  [file-name
+   (p/html5
+     (head {:title (first title) :link (str (:host config) file-name ".html")})
+     [:body.post-page
+      (header {:description? false})
+      (content
+        (post {:title    (first title)
+               :date     date
+               :author   (first author)
+               :comments (first comments)
+               :html     html})
+        (newsletter-block))
+      (footer)])])
 
 
-(defn render-posts [file-names posts]
+(defn render-posts [posts]
   (->> posts
-       (map render-post file-names)
-       (zipmap file-names)
+       (map render-post)
        (run! #(spit (str "static/" (first %) ".html") (second %)))))
 
-(defn render-main [file-names posts]
-  (->> (zipmap file-names posts)
-       (render-page)
+(defn render-main [posts]
+  (->> (render-page posts)
        (spit "static/index.html")))
 
-(defn render-rss [file-names posts]
-  (->> (rss/render config file-names posts)
+(defn render-rss [posts]
+  (->> (rss/render config posts)
        (spit "static/rss.xml")))
 
 (defn ignore-post? [^File f]
   (.startsWith (.getName f) "__"))
+
+(defn parse-date [{{:keys [date]} :metadata :as post}]
+  (let [date (->> (first date)
+                  (re-matches #"^(\d\d)-(\d\d)-(\d\d\d\d)$")
+                  rest
+                  (map #(Integer/parseInt ^String %))
+                  (zipmap [:date :month :year]))
+        d (doto (Date.)
+            (.setDate (:date date))
+            (.setYear (- (:year date) 1900))
+            (.setMonth (dec (:year date))))]
+    (-> post
+        (assoc-in [:metadata :date] date)
+        (assoc-in [:metadata :d] d))))
 
 (defn render-blog []
   (let [files (->> (file-seq (File. "posts"))
@@ -149,10 +168,14 @@
         posts (->> files
                    (map slurp)
                    (map #(clojure.string/replace % "'" "’"))
-                   (map #(md/md-to-html-string-with-meta %)))]
-    (render-posts file-names posts)
-    (render-main file-names posts)
-    (render-rss file-names posts)))
+                   (map #(md/md-to-html-string-with-meta %))
+                   (map parse-date)
+                   (map #(assoc %2 :file %1) file-names)
+                   (sort-by #(-> % :metadata :d))
+                   reverse)]
+    (render-posts posts)
+    (render-main posts)
+    (render-rss posts)))
 
 (defn parse-args [args]
   (->> (partition 2 args)
