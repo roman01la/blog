@@ -59,9 +59,10 @@ h3 {
     margin: 0.2em 0;
 }
 
-img.center {
+p img, p video {
     display: block;
     margin: 32px auto;
+    max-width: 100%;
 }
 
 pre {
