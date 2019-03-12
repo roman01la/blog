@@ -97,17 +97,8 @@
      (footer)]))
 
 (defn newsletter-block []
-  [:form {:action "https://romanliutikov.us15.list-manage.com/subscribe/post?u=f0528471b2156274a80671df0&amp;id=aeac730aeb"
-          :method "post"}
-   [:input {:type        "email"
-            :name        "EMAIL"
-            :required    true
-            :placeholder "Your email address"}]
-   [:div {:style       "position: absolute; left: -5000px;"
-          :aria-hidden "true"}
-    [:input {:name     "b_f0528471b2156274a80671df0_aeac730aeb"
-             :tabindex -1}]]
-   [:button "Subscribe"]])
+  [:a.patreon-link {:href "https://www.patreon.com/bePatron?c=1239559" :target "_blank"}
+   "Become a patron"])
 
 (defn render-post
   [{{:keys [title author date comments]} :metadata
