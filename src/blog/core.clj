@@ -70,8 +70,8 @@
         title))
     [:div
      [:time (utils/format-date date)]
-     (when duration
-       [:span.duration (str duration " min read")])]]
+     #_(when duration
+         [:span.duration (str duration " min read")])]]
    (when html
      [:div html])
    [:footer
